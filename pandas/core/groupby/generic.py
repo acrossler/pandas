@@ -2194,13 +2194,83 @@ class SeriesGroupBy(GroupBy[Series]):
         """
         return self._idxmax_idxmin("idxmax", skipna=skipna)
 
-    @doc(Series.corr.__doc__)
     def corr(
         self,
         other: Series,
         method: CorrelationMethod = "pearson",
         min_periods: int | None = None,
     ) -> Series:
+        """
+        Compute correlation with `other` Series, excluding missing values.
+
+        The two `Series` objects are not required to be the same length and will be
+        aligned internally before the correlation function is applied.
+
+        Parameters
+        ----------
+        other : Series
+            Series with which to compute the correlation.
+        method : {'pearson', 'kendall', 'spearman'} or callable
+            Method used to compute correlation:
+
+            - pearson : Standard correlation coefficient
+            - kendall : Kendall Tau correlation coefficient
+            - spearman : Spearman rank correlation
+            - callable: Callable with input two 1d ndarrays and returning a float.
+
+            .. warning::
+                Note that the returned matrix from corr will have 1 along the
+                diagonals and will be symmetric regardless of the callable's
+                behavior.
+        min_periods : int, optional
+            Minimum number of observations needed to have a valid result.
+
+        Returns
+        -------
+        float
+            Correlation with other.
+
+        See Also
+        --------
+        DataFrame.corr : Compute pairwise correlation between columns.
+        DataFrame.corrwith : Compute pairwise correlation with another
+            DataFrame or Series.
+
+        Notes
+        -----
+        Pearson, Kendall and Spearman correlation are currently computed using pairwise complete observations.
+
+        * `Pearson correlation coefficient <https://en.wikipedia.org/wiki/Pearson_correlation_coefficient>`_
+        * `Kendall rank correlation coefficient <https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient>`_
+        * `Spearman's rank correlation coefficient <https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient>`_
+
+        Automatic data alignment: as with all pandas operations, automatic data alignment is performed for this method.
+        ``corr()`` automatically considers values with matching indices.
+
+        Examples
+        --------
+        >>> def histogram_intersection(a, b):
+        ...     v = np.minimum(a, b).sum().round(decimals=1)
+        ...     return v
+        >>> s1 = pd.Series([0.2, 0.0, 0.6, 0.2])
+        >>> s2 = pd.Series([0.3, 0.6, 0.0, 0.1])
+        >>> s1.corr(s2, method=histogram_intersection)
+        0.3
+
+        Pandas auto-aligns the values with matching indices
+
+        >>> s1 = pd.Series([1, 2, 3], index=[0, 1, 2])
+        >>> s2 = pd.Series([1, 2, 3], index=[2, 1, 0])
+        >>> s1.corr(s2)
+        -1.0
+
+        If the input is a constant array, the correlation is not defined in this case,
+        and ``np.nan`` is returned.
+
+        >>> s1 = pd.Series([0.45, 0.45])
+        >>> s1.corr(s1)
+        nan
+        """
         result = self._op_via_apply(
             "corr", other=other, method=method, min_periods=min_periods
         )
