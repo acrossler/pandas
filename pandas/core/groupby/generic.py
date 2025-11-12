@@ -2381,6 +2381,72 @@ class SeriesGroupBy(GroupBy[Series]):
         legend: bool = False,
         **kwargs,
     ):
+        """
+        Draw histogram of the input series using matplotlib.
+
+        Parameters
+        ----------
+        by : object, optional
+            If passed, then used to form histograms for separate groups.
+        ax : matplotlib axis object
+            If not passed, uses gca().
+        grid : bool, default True
+            Whether to show axis grid lines.
+        xlabelsize : int, default None
+            If specified changes the x-axis label size.
+        xrot : float, default None
+            Rotation of x axis labels.
+        ylabelsize : int, default None
+            If specified changes the y-axis label size.
+        yrot : float, default None
+            Rotation of y axis labels.
+        figsize : tuple, default None
+            Figure size in inches by default.
+        bins : int or sequence, default 10
+            Number of histogram bins to be used. If an integer is given, bins + 1
+            bin edges are calculated and returned. If bins is a sequence, gives
+            bin edges, including left edge of first bin and right edge of last
+            bin. In this case, bins is returned unmodified.
+        backend : str, default None
+            Backend to use instead of the backend specified in the option
+            ``plotting.backend``. For instance, 'matplotlib'. Alternatively, to
+            specify the ``plotting.backend`` for the whole session, set
+            ``pd.options.plotting.backend``.
+        legend : bool, default False
+            Whether to show the legend.
+
+        **kwargs
+            To be passed to the actual plotting function.
+
+        Returns
+        -------
+        matplotlib.axes.Axes
+            A histogram plot.
+
+        See Also
+        --------
+        matplotlib.axes.Axes.hist : Plot a histogram using matplotlib.
+
+        Examples
+        --------
+        For Series:
+
+        .. plot::
+            :context: close-figs
+
+            >>> lst = ["a", "a", "a", "b", "b", "b"]
+            >>> ser = pd.Series([1, 2, 2, 4, 6, 6], index=lst)
+            >>> hist = ser.hist()
+
+        For Groupby:
+
+        .. plot::
+            :context: close-figs
+
+            >>> lst = ["a", "a", "a", "b", "b", "b"]
+            >>> ser = pd.Series([1, 2, 2, 4, 6, 6], index=lst)
+            >>> hist = ser.groupby(level=0).hist()
+        """
         result = self._op_via_apply(
             "hist",
             by=by,
