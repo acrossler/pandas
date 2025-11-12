@@ -2365,7 +2365,6 @@ class SeriesGroupBy(GroupBy[Series]):
         """
         return self.apply(lambda ser: ser.is_monotonic_decreasing)
 
-    @doc(Series.hist.__doc__)
     def hist(
         self,
         by=None,
@@ -2465,8 +2464,23 @@ class SeriesGroupBy(GroupBy[Series]):
         return result
 
     @property
-    @doc(Series.dtype.__doc__)
     def dtype(self) -> Series:
+        """
+        Return the dtype object of the underlying data.
+
+        See Also
+        --------
+        Series.dtypes : Return the dtype object of the underlying data.
+        Series.astype : Cast a pandas object to a specified dtype dtype.
+        Series.convert_dtypes : Convert columns to the best possible dtypes using dtypes
+            supporting pd.NA.
+
+        Examples
+        --------
+        >>> s = pd.Series([1, 2, 3])
+        >>> s.dtype
+        dtype('int64')
+        """
         return self.apply(lambda ser: ser.dtype)
 
     def unique(self) -> Series:
